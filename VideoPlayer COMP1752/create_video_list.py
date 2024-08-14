@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.scrolledtext as tkst
 import video_library as lib
-from play_playlist import PlayPlaylist  # Import the PlayPlaylist class
+from play_playlist import PlayPlaylist 
 
 def set_text(text_area, content):
     text_area.delete("1.0", tk.END)
@@ -11,7 +11,7 @@ class CreateVideoList:
     def __init__(self, window):
         self.playlist = []
 
-        window.geometry("1000x800")
+        window.geometry("1000x600")
         window.title("Create Video List")
 
         enter_lbl = tk.Label(window, text="Enter Video Number")
@@ -42,20 +42,26 @@ class CreateVideoList:
         video_id = self.input_txt.get()
         name = lib.get_name(video_id)
         if name:
-            self.playlist.append(video_id)
-            self.update_playlist_display()
-            self.status_lbl.configure(text=f"Added video {video_id} to playlist!")
+            if video_id not in self.playlist:
+                self.playlist.append(video_id)
+                self.update_playlist_display()
+                self.status_lbl.configure(text=f"Added video {video_id} to playlist!")
+            else:
+                self.status_lbl.configure(text=f"Video {video_id} is already in the playlist!")
         else:
             self.status_lbl.configure(text=f"Video {video_id} not found!")
 
     def add_random_video(self):
         video_id = lib.get_random_video_id()
         if video_id:
-            self.input_txt.delete(0, tk.END)  
-            self.input_txt.insert(0, video_id) 
-            self.playlist.append(video_id)
-            self.update_playlist_display()
-            self.status_lbl.configure(text=f"Added random video {video_id} to playlist!")
+            if video_id not in self.playlist:
+                self.input_txt.delete(0, tk.END)  
+                self.input_txt.insert(0, video_id) 
+                self.playlist.append(video_id)
+                self.update_playlist_display()
+                self.status_lbl.configure(text=f"Added random video {video_id} to playlist!")
+            else:
+                self.status_lbl.configure(text=f"Random video {video_id} is already in the playlist!")
         else:
             self.status_lbl.configure(text="No random video found!")
 
@@ -64,10 +70,13 @@ class CreateVideoList:
         set_text(self.playlist_txt, "\n".join(playlist_names))
 
     def play_playlist(self):
-        for video_id in self.playlist:
-            lib.increment_play_count(video_id)
-        self.update_playlist_display()
-        PlayPlaylist(self.playlist_txt)
+        if self.playlist: 
+            for video_id in self.playlist:
+                lib.increment_play_count(video_id)
+            self.update_playlist_display()
+            PlayPlaylist(self.playlist_txt)
+        else:
+            self.status_lbl.configure(text="There are no videos in the playlist.")
 
     def reset_playlist(self):
         self.playlist = []
