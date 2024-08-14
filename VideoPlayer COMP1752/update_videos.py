@@ -7,7 +7,7 @@ class UpdateVideos():
         window.geometry("400x250")
         window.title("Update Video Rating")
 
-        enter_lbl = tk.Label(window, text="Enter Video Number")
+        enter_lbl = tk.Label(window, text="Enter Video ID")
         enter_lbl.grid(row=0, column=0, padx=10, pady=10)
 
         self.video_id_txt = tk.Entry(window, width=10)
@@ -29,13 +29,17 @@ class UpdateVideos():
     def update_rating(self):
         video_id = self.video_id_txt.get()
         new_rating = self.new_rating_txt.get()
+        if video_id is None or video_id == "":
+            self.status_lbl.configure(text="Please enter a valid video ID")
+            return
         try:
             new_rating = int(new_rating)
         except ValueError:
-            self.status_lbl.configure(text="Rating must be an integer!")
+            self.status_lbl.configure(text="You must enter a valid Rating (1-5)!")
             return
-        if new_rating >5 or new_rating<0:
-            return self.status_lbl.configure(text="Rating must be in range of 1-5 !")
+        if new_rating > 5 or new_rating < 1:
+            self.status_lbl.configure(text="Rating must be in the range of 1-5!")
+            return
         if lib.update_rating(video_id, new_rating):
             name = lib.get_name(video_id)
             play_count = lib.get_play_count(video_id)
