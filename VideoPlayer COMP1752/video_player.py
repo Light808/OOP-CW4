@@ -7,22 +7,28 @@ import tkinter.messagebox as msgbox
 
 def check_videos_clicked():
     status_lbl.configure(text="Check Videos button was clicked!")
-    CheckVideos(tk.Toplevel(window))
+    new_window = tk.Toplevel(window)
+    CheckVideos(new_window)
+    apply_mode_to_window(new_window)
 
 def create_videos_list_clicked():
     status_lbl.configure(text="Create Videos List button was clicked!")
-    CreateVideoList.CreateVideoList(tk.Toplevel(window))
+    new_window = tk.Toplevel(window)
+    CreateVideoList.CreateVideoList(new_window)
+    apply_mode_to_window(new_window)
 
 def update_videos_clicked():
     status_lbl.configure(text="Update Videos button was clicked!")
-    UpdateVideos(tk.Toplevel(window))
+    new_window = tk.Toplevel(window)
+    UpdateVideos(new_window)
+    apply_mode_to_window(new_window)
 
 def shutdown_btn():
     msgbox.showinfo("Self Destruct", "OH Perry look like you found out my Self-Destruct Button, Wait don't press it Perry. Nooooo.....")
     window.destroy()
 
 def toggle_mode():
-    global dark_mode  
+    global dark_mode 
     if dark_mode:
         apply_light_mode()
         toggle_mode_btn.configure(text="Dark Mode")
@@ -39,13 +45,38 @@ def apply_dark_mode():
         if isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
             widget.configure(bg="#333333", fg="#FFFFFF")
 
+    for child in window.winfo_children():
+        if isinstance(child, tk.Toplevel):
+            apply_dark_mode_to_window(child)
+
 def apply_light_mode():
-    window.configure(bg="#FFFFFF")
-    status_lbl.configure(bg="#FFFFFF", fg="#000000")
-    header_lbl.configure(bg="#FFFFFF", fg="#000000")
+    window.configure(bg="#F0F0F0")
+    status_lbl.configure(bg="#F0F0F0", fg="#000000")
+    header_lbl.configure(bg="#F0F0F0", fg="#000000")
     for widget in window.winfo_children():
         if isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
-            widget.configure(bg="#FFFFFF", fg="#000000")
+            widget.configure(bg="#F0F0F0", fg="#000000")
+    for child in window.winfo_children():
+        if isinstance(child, tk.Toplevel):
+            apply_light_mode_to_window(child)
+
+def apply_dark_mode_to_window(win):
+    win.configure(bg="#333333")
+    for widget in win.winfo_children():
+        if isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
+            widget.configure(bg="#333333", fg="#FFFFFF")
+
+def apply_light_mode_to_window(win):
+    win.configure(bg="#F0F0F0")
+    for widget in win.winfo_children():
+        if isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
+            widget.configure(bg="#F0F0F0", fg="#000000")
+
+def apply_mode_to_window(win):
+    if dark_mode:
+        apply_dark_mode_to_window(win)
+    else:
+        apply_light_mode_to_window(win)
 
 window = tk.Tk()
 window.geometry("520x250")
@@ -54,7 +85,6 @@ window.title("Video Player")
 fonts.configure()
 
 dark_mode = False
-
 
 header_lbl = tk.Label(window, text="Select an option by clicking one of the buttons below")
 header_lbl.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
@@ -72,7 +102,7 @@ shutdown_button = tk.Button(window, text="Self-destruct Button", command=shutdow
 shutdown_button.grid(row=1, column=5, padx=10, pady=10)
 
 toggle_mode_btn = tk.Button(window, text="Dark Mode", command=toggle_mode)
-toggle_mode_btn.place(relx=0.0, rely=1.0, anchor='sw', x=10, y=-10)
+toggle_mode_btn.place(relx=0.0, rely=1.0, anchor='sw', x=10, y=-10)  
 
 status_lbl = tk.Label(window, text="", font=("Helvetica", 10))
 status_lbl.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
